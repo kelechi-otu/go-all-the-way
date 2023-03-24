@@ -15,11 +15,19 @@ func init() {
 
 type Recipe struct {
 	Id           string    `json:"id"`
+	ChefId       string    `json:"chef_id"`
 	Name         string    `json:"name"`
 	Keywords     []string  `json:"keywords"`
 	Ingredients  []string  `json:"ingredients"`
 	Instructions []string  `json:"instructions"`
-	PublishedAt  time.Time `json:"publishedAt"`
+	PublishedAt  time.Time `json:"published_at"`
+}
+
+type Chef struct {
+	Id                string `json:"id"`
+	Name              string `json:"name"`
+	Country           string `json:"country"`
+	YearsOfExperience int    `json:"years_of_experience"`
 }
 
 func DeleteRecipeHandler(c *gin.Context) {
@@ -89,6 +97,13 @@ func NewRecipeHandler(c *gin.Context) {
 	if err := c.ShouldBindJSON(&recipe); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),
+		})
+		return
+	}
+
+	if recipe.ChefId == "" {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "chef id is required",
 		})
 		return
 	}
